@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMTP Quote Builder 3.0 — Point Me to Paradise Travel</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%2375AFB1'/><text y='72' x='50' text-anchor='middle' font-size='62' font-family='Georgia,serif' font-weight='bold' fill='%23DAC396'>P</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Jost',sans-serif;background:#F5EFE0;color:#2C2C2C;min-height:100vh;display:flex;flex-direction:column;}
+header{background:#75AFB1;padding:20px 40px 16px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px;position:relative;}
+header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;background:#DAC396;}
+.agency-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#fff;}
+.tagline{font-size:11px;color:#C4E4E1;font-style:italic;margin-top:2px;}
+.hdr-r{text-align:right;color:#C4E4E1;font-size:11.5px;line-height:1.7;}
+.hdr-r strong{color:#fff;}
+main{flex:1;max-width:900px;margin:0 auto;padding:30px 20px 60px;width:100%;}
+.tool-title{font-family:'Cormorant Garamond',serif;font-size:30px;color:#5a9092;margin-bottom:4px;}
+.tool-sub{font-size:13px;color:#5a5a5a;margin-bottom:22px;line-height:1.6;}
+/* Tabs & progress */
+.tabs{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
+.tab{padding:5px 13px;font-size:11.5px;border:1px solid #ccc;border-radius:20px;background:#fff;color:#5a5a5a;cursor:pointer;transition:all .15s;}
+.tab:hover{border-color:#75AFB1;color:#5a9092;}
+.tab.active{background:#75AFB1;color:#fff;border-color:#75AFB1;}
+.tab.gtab{background:rgba(218,195,150,0.2);border-color:#DAC396;color:#8a6a20;}
+.prog{display:flex;gap:3px;margin-bottom:14px;}
+.pd{height:3px;flex:1;border-radius:2px;background:#ddd;}
+.pd.done{background:#75AFB1;}
+.sec{display:none;}.sec.active{display:block;}
+/* Forms */
+.sec-title{font-size:14px;font-weight:600;color:#2C2C2C;margin-bottom:5px;display:flex;align-items:center;gap:8px;}
+.bdg{background:#75AFB1;color:#fff;font-size:10px;padding:2px 7px;border-radius:20px;}
+.bdg.gold{background:#DAC396;color:#7a6030;}
+.hint{font-size:11.5px;color:#5a5a5a;margin-bottom:12px;line-height:1.55;}
+.hint b{color:#2C2C2C;}
+.field{margin-bottom:11px;}
+label{display:block;font-size:11.5px;color:#5a5a5a;margin-bottom:3px;font-weight:500;}
+input,textarea,select{width:100%;border:1px solid #ccc;border-radius:8px;padding:7px 10px;font-size:13px;font-family:'Jost',sans-serif;background:#fff;color:#2C2C2C;resize:vertical;transition:border-color .15s;}
+input:focus,textarea:focus,select:focus{outline:none;border-color:#75AFB1;box-shadow:0 0 0 3px rgba(117,175,177,0.12);}
+textarea.tall{min-height:110px;}
+textarea.short{min-height:52px;}
+textarea.med{min-height:72px;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px;}
+.row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;}
+@media(max-width:580px){.row2,.row3,.row4{grid-template-columns:1fr 1fr;}}
+@media(max-width:380px){.row2,.row3,.row4{grid-template-columns:1fr;}}
+/* Agent box */
+.agent-box{background:#f5f0e8;border:1px solid #e0d8c8;border-radius:12px;padding:14px;margin-bottom:16px;}
+.agent-ttl{font-size:10.5px;font-weight:600;color:#5a5a5a;margin-bottom:9px;text-transform:uppercase;letter-spacing:.08em;}
+.divider{border:none;border-top:1px solid #e8e8e8;margin:14px 0;}
+/* Output format cards */
+.oc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;}
+@media(max-width:480px){.oc-grid{grid-template-columns:1fr;}}
+.oc{border:2px solid #ddd;border-radius:12px;padding:12px;cursor:pointer;text-align:center;background:#fff;transition:all .15s;user-select:none;}
+.oc:hover{border-color:#75AFB1;}
+.oc.on{border-color:#75AFB1;background:rgba(117,175,177,0.07);}
+.oc-icon{font-size:20px;margin-bottom:5px;}
+.oc-label{font-size:12.5px;font-weight:600;color:#2C2C2C;}
+.oc-desc{font-size:10.5px;color:#5a5a5a;margin-top:2px;line-height:1.4;}
+.oc-chk{width:17px;height:17px;border-radius:50%;border:1.5px solid #ccc;margin:7px auto 0;display:flex;align-items:center;justify-content:center;font-size:10px;}
+.oc.on .oc-chk{background:#75AFB1;border-color:#75AFB1;color:#fff;}
+/* Section builder */
+.add-section-bar{display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap;}
+.type-select{flex:1;min-width:160px;max-width:220px;}
+.add-sec-btn{padding:8px 18px;font-size:13px;font-weight:600;background:#75AFB1;color:#fff;border:none;border-radius:8px;cursor:pointer;white-space:nowrap;transition:background .15s;}
+.add-sec-btn:hover{background:#5a9092;}
+/* Trip sections */
+.trip-section{border:1.5px solid #c8d8d9;border-radius:12px;margin-bottom:14px;background:#fff;overflow:hidden;}
+.ts-head{background:rgba(117,175,177,0.1);padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #dde8e8;}
+.ts-icon{font-size:16px;flex-shrink:0;}
+.ts-meta{flex:1;min-width:0;}
+.ts-label-inp{border:none;background:transparent;font-size:13px;font-weight:600;color:#2C2C2C;padding:0;font-family:'Jost',sans-serif;width:100%;display:block;}
+.ts-label-inp::placeholder{color:#aaa;font-weight:400;}
+.ts-type-tag{font-size:10px;color:#75AFB1;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-top:2px;}
+.ts-controls{display:flex;gap:6px;align-items:center;flex-shrink:0;}
+.ts-move{font-size:14px;color:#aaa;border:none;background:none;cursor:pointer;padding:2px 4px;line-height:1;}
+.ts-move:hover{color:#75AFB1;}
+.ts-rm{font-size:11px;color:#bbb;border:none;background:none;cursor:pointer;padding:2px 6px;}
+.ts-rm:hover{color:#c0392b;}
+.ts-body{padding:14px;}
+/* Options within section */
+.option-card{border:1px solid #e8e8e8;border-radius:10px;padding:12px;margin-bottom:10px;background:#fafaf8;}
+.opt-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.opt-label{font-size:11.5px;font-weight:600;color:#5a5a5a;}
+.rm{font-size:11px;color:#bbb;border:none;background:none;cursor:pointer;padding:2px 5px;}
+.rm:hover{color:#c0392b;}
+/* Price status row */
+.price-row{display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;align-items:start;margin-top:8px;}
+.ps-btns{display:flex;gap:5px;padding-top:4px;}
+.ps-btn{font-size:11px;padding:5px 10px;border:1.5px solid #ddd;border-radius:6px;background:#fff;cursor:pointer;transition:all .15s;white-space:nowrap;font-family:'Jost',sans-serif;font-weight:500;}
+.ps-btn.active-price{border-color:#75AFB1;background:rgba(117,175,177,0.12);color:#5a9092;}
+.ps-btn.active-tbd{border-color:#DAC396;background:rgba(218,195,150,0.15);color:#8a6a20;}
+.ps-btn.active-inc{border-color:#27ae60;background:rgba(39,174,96,0.1);color:#1e8449;}
+.price-inp-wrap{display:none;}
+.price-inp-wrap.show{display:block;}
+/* Photos */
+.photo-area{margin-top:10px;padding-top:10px;border-top:1px solid #eee;}
+.photo-area-title{font-size:10.5px;font-weight:600;color:#5a5a5a;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;}
+.photo-preview{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;}
+.photo-preview img{width:50px;height:37px;object-fit:cover;border-radius:4px;border:1px solid #ddd;}
+.ph-broken{width:50px;height:37px;border-radius:4px;border:1px dashed #ccc;display:flex;align-items:center;justify-content:center;font-size:9px;color:#999;}
+.img-preview-wrap img{width:58px;height:44px;border-radius:6px;object-fit:cover;border:1px solid #ddd;}
+.img-broken-s{width:58px;height:44px;border-radius:6px;border:1px dashed #ccc;display:flex;align-items:center;justify-content:center;font-size:9px;color:#999;text-align:center;}
+/* Add option btn */
+.add-opt-btn{font-size:11.5px;color:#75AFB1;border:1px dashed #75AFB1;background:none;border-radius:7px;padding:6px 12px;cursor:pointer;width:100%;transition:background .15s;margin-top:4px;}
+.add-opt-btn:hover{background:rgba(117,175,177,0.07);}
+.add-opt-btn:disabled{opacity:.4;cursor:not-allowed;}
+/* Empty state */
+.empty-state{text-align:center;padding:40px 20px;color:#aaa;border:2px dashed #ddd;border-radius:12px;margin-bottom:16px;}
+.empty-state .es-icon{font-size:32px;margin-bottom:10px;}
+.empty-state p{font-size:13px;line-height:1.6;}
+/* Nav */
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid #e0e0e0;}
+.nb{padding:8px 18px;font-size:13px;border-radius:8px;cursor:pointer;border:1px solid #ccc;background:#fff;color:#2C2C2C;}
+.nb:hover{background:#f5f5f5;}
+/* Output */
+.out{background:#f5f0e8;border:1px solid #e0d8c8;border-radius:10px;padding:14px;font-size:11px;font-family:monospace;color:#2C2C2C;white-space:pre-wrap;line-height:1.6;max-height:440px;overflow-y:auto;margin-bottom:12px;}
+.copy-btn{width:100%;padding:11px;font-size:14px;font-weight:600;border-radius:10px;cursor:pointer;border:2px solid #75AFB1;background:rgba(117,175,177,0.1);color:#5a9092;}
+.copy-btn:hover{background:rgba(117,175,177,0.2);}
+.copied{color:#27ae60;font-size:12px;text-align:center;margin-top:6px;display:none;font-weight:500;}
+/* Guide */
+.gs{margin-bottom:20px;}
+.gs-ttl{font-size:13px;font-weight:600;color:#2C2C2C;background:rgba(117,175,177,0.1);border-left:3px solid #75AFB1;padding:8px 12px;border-radius:0 8px 8px 0;margin-bottom:11px;}
+.step{display:flex;gap:11px;margin-bottom:10px;align-items:flex-start;}
+.sn{min-width:23px;height:23px;border-radius:50%;background:#75AFB1;color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.sb{font-size:12.5px;color:#2C2C2C;line-height:1.65;}
+.sn2{font-size:11px;color:#5a5a5a;margin-top:3px;font-style:italic;}
+.cp{display:inline-block;background:#f0ebe0;border:1px solid #ddd;border-radius:4px;padding:1px 6px;font-family:monospace;font-size:11px;}
+.wb{background:rgba(218,195,150,0.2);border:1px solid #DAC396;border-radius:8px;padding:10px 12px;font-size:12px;color:#2C2C2C;margin:8px 0;line-height:1.65;}
+.okb{background:rgba(117,175,177,0.1);border:1px solid #75AFB1;border-radius:8px;padding:10px 12px;font-size:12px;color:#2C2C2C;margin:8px 0;line-height:1.65;}
+footer{background:#75AFB1;padding:14px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+footer .fl{color:#fff;font-size:12px;font-weight:500;}
+footer .fr{color:#C4E4E1;font-size:11px;font-style:italic;}
+</style>
+</head>
+<body>
+
+<header>
+  <div><div class="agency-name">Point Me to Paradise Travel</div><div class="tagline">Custom. Curated. Yours.</div></div>
+  <div class="hdr-r"><strong>Quote Builder 3.0</strong><br>For PMTP Travel Advisors</div>
+</header>
+
+<main>
+<h1 class="tool-title">Quote Builder 3.0</h1>
+<p class="tool-sub">Build your quote chronologically — add sections in the order they happen. Each section is a component group (flights, hotels, tours, etc.) with as many options as you need. Every item is priced, TBD, or included.</p>
+
+<div class="prog" id="prog"></div>
+<div class="tabs" id="tabs"></div>
+<div id="sw">
+
+<!-- STEP 0: OVERVIEW -->
+<div class="sec active" data-s="0">
+  <div class="sec-title">Agent & Trip Info <span class="bdg">required</span></div>
+  <div class="agent-box">
+    <div class="agent-ttl">Your Information</div>
+    <div class="row3">
+      <div class="field"><label>Your Full Name</label><input id="agentName" placeholder="e.g. Christina Garcia"></div>
+      <div class="field"><label>Your Email</label><input id="agentEmail" placeholder="e.g. Christina@PointMeToParadise.com"></div>
+      <div class="field"><label>Your Phone</label><input id="agentPhone" placeholder="e.g. (281) 229-0862"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Web3Forms Access Key</label><input id="w3key" placeholder="Paste your Web3Forms access key here"></div>
+      <div class="field"><label>GitHub Pages Base URL</label><input id="ghUrl" placeholder="https://[username].github.io/pmtp-quotes/"></div>
+    </div>
+  </div>
+  <div class="row2">
+    <div class="field"><label>Trip Title</label><input id="tripTitle" placeholder="e.g. Your Cabo Escape, The Johnson European Adventure"></div>
+    <div class="field"><label>Client Name(s)</label><input id="cn" placeholder="e.g. Sarah & James Beede"></div>
+  </div>
+  <div class="field"><label>Opening Paragraph — warm personal note shown at the top of the quote</label><textarea class="med" id="openPara" placeholder="e.g. I am so excited to put this together for you! Below you will find everything laid out in order from departure to return. Take your time reviewing — I am here for any questions!"></textarea></div>
+  <div class="row3">
+    <div class="field"><label>Overall Travel Dates</label><input id="dates" placeholder="e.g. Oct 7–14, 2026"></div>
+    <div class="field"><label>Number of Guests</label><input id="guests" placeholder="e.g. 2 Adults"></div>
+    <div class="field"><label>Trip Type</label>
+      <select id="tt">
+        <option value="">Select...</option>
+        <option>Honeymoon</option><option>Anniversary</option><option>Family Vacation</option>
+        <option>Girls Trip</option><option>Group Travel</option><option>Corporate Group</option>
+        <option>Solo Travel</option><option>Cruise</option><option>Adventure Travel</option><option>General Vacation</option>
+      </select>
+    </div>
+  </div>
+  <div class="field"><label>Additional Notes for Claude</label><textarea class="short" id="sn" placeholder="Budget sensitivity, dietary needs, mobility, first international trip, group dynamics, etc."></textarea></div>
+  <hr class="divider">
+  <div class="sec-title" style="margin-bottom:6px;">Output Format <span class="bdg gold">choose one or more</span></div>
+  <div class="oc-grid">
+    <div class="oc on" data-out="html" onclick="toggleOut(this)"><div class="oc-icon">🌐</div><div class="oc-label">HTML Page</div><div class="oc-desc">Interactive, live calculator, GitHub Pages</div><div class="oc-chk">✓</div></div>
+    <div class="oc" data-out="pdf" onclick="toggleOut(this)"><div class="oc-icon">📄</div><div class="oc-label">PDF Quote</div><div class="oc-desc">Print-ready, Python + ReportLab</div><div class="oc-chk"></div></div>
+    <div class="oc" data-out="docx" onclick="toggleOut(this)"><div class="oc-icon">📝</div><div class="oc-label">Word Doc</div><div class="oc-desc">Branded .docx, Node.js + docx</div><div class="oc-chk"></div></div>
+  </div>
+</div>
+
+<!-- STEP 1: BUILD QUOTE -->
+<div class="sec" data-s="1">
+  <div class="sec-title">Build Your Quote <span class="bdg">chronological order</span></div>
+  <div class="hint">Add sections in the order they happen on the trip. Each section is a component group — you choose the type, give it a label, then add one or more options inside it. Every option is <b>priced</b>, <b>TBD</b>, or <b>Included</b>.</div>
+
+  <div class="add-section-bar">
+    <select id="newSectionType" class="type-select">
+      <option value="">— Choose component type —</option>
+      <option value="flight"  data-icon="✈️">✈️ Flight</option>
+      <option value="hotel"   data-icon="🏨">🏨 Hotel</option>
+      <option value="transfer"data-icon="🚐">🚐 Transfer</option>
+      <option value="tour"    data-icon="🗺️">🗺️ Tour / Excursion</option>
+      <option value="dinner"  data-icon="🍽️">🍽️ Dinner / Dining</option>
+      <option value="rail"    data-icon="🚄">🚄 Rail</option>
+      <option value="ferry"   data-icon="⛴️">⛴️ Ferry</option>
+      <option value="ticket"  data-icon="🎟️">🎟️ Ticket / Pass</option>
+      <option value="car"     data-icon="🚗">🚗 Car Rental</option>
+      <option value="cruise"  data-icon="🚢">🚢 Cruise</option>
+      <option value="insurance" data-icon="🛡️">🛡️ Insurance</option>
+    </select>
+    <button class="add-sec-btn" onclick="addSection()">+ Add Section</button>
+  </div>
+
+  <div id="sections-container">
+    <div class="empty-state" id="empty-state">
+      <div class="es-icon">🗓️</div>
+      <p>Your quote is empty.<br>Choose a component type above and click <b>+ Add Section</b> to start building.</p>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 2: PRICING -->
+<div class="sec" data-s="2">
+  <div class="sec-title">Pricing Summary</div>
+  <div class="hint">The HTML quote shows a <b>live running total</b> that updates as clients select options and check add-ons. Items marked Included show a green checkmark. Items marked TBD show "Contact your advisor."</div>
+  <div id="pc"></div>
+  <button class="add-opt-btn" style="margin-bottom:12px;" onclick="addPriceLine()">+ Add summary pricing line</button>
+  <div class="row2">
+    <div class="field"><label>Base Price — any fixed costs not in sections above (numbers only)</label><input id="bp" placeholder="e.g. 1200.00 — leave blank if all in sections"></div>
+    <div class="field"><label>Grand Total — leave blank if fully TBD</label><input id="gt" placeholder="e.g. 8450.00"></div>
+  </div>
+  <div class="row2">
+    <div class="field"><label>Deposit Amount</label><input id="da" placeholder="e.g. 1607.40"></div>
+    <div class="field"><label>Deposit Due Date</label><input id="dd" placeholder="e.g. April 12, 2026"></div>
+  </div>
+  <div class="row2">
+    <div class="field"><label>Full Payment Due Date</label><input id="fp" placeholder="e.g. August 23, 2026"></div>
+    <div class="field"><label>Currency</label><input id="currency" placeholder="USD (default)"></div>
+  </div>
+  <div class="field"><label>Payment Notes</label><textarea class="short" id="pn" placeholder="e.g. Some items TBD pending hotel selection. Non-refundable items noted individually above."></textarea></div>
+</div>
+
+<!-- STEP 3: GENERATE -->
+<div class="sec" data-s="3">
+  <div class="sec-title">Your Prompt is Ready</div>
+  <div class="hint">Copy this and paste it into your PMTP Claude project.</div>
+  <div class="out" id="out"></div>
+  <button class="copy-btn" onclick="doCopy()">Copy Prompt</button>
+  <div class="copied" id="cpd">Copied to clipboard!</div>
+</div>
+
+<!-- SETUP GUIDE -->
+<div class="sec" data-s="99">
+  <div class="sec-title">Setup Guide <span class="bdg gold">one-time setup</span></div>
+  <div class="hint">Do these steps once. After that, just fill in the builder and copy the prompt for every new quote.</div>
+  <div class="gs">
+    <div class="gs-ttl">Part 1 — Web3Forms (emails you every time a client submits)</div>
+    <div class="step"><div class="sn">1</div><div class="sb">Go to <b>web3forms.com</b>. Click <b>"Get Started Free."</b></div></div>
+    <div class="step"><div class="sn">2</div><div class="sb">Enter your <b>work email</b> and click <b>"Get your Access Key."</b><div class="sn2">Use the email where you want to receive client selections.</div></div></div>
+    <div class="step"><div class="sn">3</div><div class="sb">Check your inbox for a Web3Forms confirmation email. <b>Click the confirmation link.</b><div class="sn2">Check spam if you don't see it in 2 minutes.</div></div></div>
+    <div class="step"><div class="sn">4</div><div class="sb">Copy your <b>Access Key</b> (looks like <span class="cp">7b40d437-1004-48e2-9031-171a8b0ef4f1</span>) and paste it into Agent Info above.</div></div>
+    <div class="step"><div class="sn">5</div><div class="sb">Log in at <b>app.web3forms.com</b> anytime to see all submissions.</div></div>
+    <div class="okb">Done. One key works for all quotes forever.</div>
+  </div>
+  <div class="gs">
+    <div class="gs-ttl">Part 2 — GitHub (hosts your live quote pages for free)</div>
+    <div class="step"><div class="sn">1</div><div class="sb">Go to <b>github.com</b>. Click <b>"Sign up"</b> and create a free account.</div></div>
+    <div class="step"><div class="sn">2</div><div class="sb">Click <b>"+"</b> top right → <b>"New repository."</b></div></div>
+    <div class="step"><div class="sn">3</div><div class="sb">Name it <b>pmtp-quotes</b>. Select <b>"Public."</b> Click <b>"Create repository."</b></div></div>
+    <div class="step"><div class="sn">4</div><div class="sb">Click <b>"Settings"</b> → <b>"Pages"</b> in the left sidebar.</div></div>
+    <div class="step"><div class="sn">5</div><div class="sb">Under Branch select <b>"main"</b> → folder <b>"/ (root)"</b> → click <b>"Save."</b></div></div>
+    <div class="step"><div class="sn">6</div><div class="sb">Wait 2–3 min. Green banner appears with your live URL. Paste it into Agent Info above.</div></div>
+    <div class="okb">Done. Upload all future quotes to this same repo.</div>
+  </div>
+  <div class="gs">
+    <div class="gs-ttl">Part 3 — Uploading a Quote (every new quote)</div>
+    <div class="step"><div class="sn">1</div><div class="sb">Download the HTML file Claude built.</div></div>
+    <div class="step"><div class="sn">2</div><div class="sb">Go to your repo on GitHub → click <b>"Add file" → "Upload files."</b></div></div>
+    <div class="step"><div class="sn">3</div><div class="sb">Drag your file in → click <b>"Commit changes."</b></div></div>
+    <div class="step"><div class="sn">4</div><div class="sb">Wait 2–3 min. Live at: <span class="cp">https://[username].github.io/pmtp-quotes/[filename].html</span></div></div>
+    <div class="wb"><b>Replacing a file:</b> Upload same filename → wait 3 min → add <span class="cp">?v=2</span> to URL to force reload.</div>
+    <div class="wb"><b>404 error?</b> Wait 3 more minutes. Filename in URL must exactly match — capital letters matter.</div>
+    <div class="okb">All quotes in one repo. Never create another repo.</div>
+  </div>
+  <div class="gs">
+    <div class="gs-ttl">Part 4 — Test Before Sending</div>
+    <div class="step"><div class="sn">1</div><div class="sb">Open your live quote URL in a browser.</div></div>
+    <div class="step"><div class="sn">2</div><div class="sb">Select options — running total should update instantly.</div></div>
+    <div class="step"><div class="sn">3</div><div class="sb">Check/uncheck add-ons — total should update live.</div></div>
+    <div class="step"><div class="sn">4</div><div class="sb">Submit with your own name/email. Web3Forms email should arrive in 1–2 min.</div></div>
+    <div class="step"><div class="sn">5</div><div class="sb">All good? Send the client their PDF — last page links to the selection page.</div></div>
+  </div>
+</div>
+
+</div><!-- end sw -->
+<div class="nav">
+  <button class="nb" id="pb" onclick="nav(-1)" style="visibility:hidden">← Back</button>
+  <span id="sl" style="font-size:12px;color:#5a5a5a;"></span>
+  <button class="nb" id="nb2" onclick="nav(1)">Next →</button>
+</div>
+</main>
+
+<footer>
+  <div class="fl">Point Me to Paradise Travel &nbsp;·&nbsp; Quote Builder 3.0</div>
+  <div class="fr">For internal use by PMTP travel advisors only</div>
+</footer>
+
+<script>
+// ── Config ─────────────────────────────────────────────────────
+const STEPS = ['Overview', 'Build Quote', 'Pricing', 'Generate'];
+const TYPE_META = {
+  flight:   { icon: '✈️',  label: 'Flight',           pickOne: true,  maxOpts: 4,  hint: 'One option per fare/airline choice. If client books own flights, add one option, paste details, mark Included or TBD with note.' },
+  hotel:    { icon: '🏨',  label: 'Hotel',             pickOne: true,  maxOpts: 6,  hint: 'Up to 6 hotel options — client picks one. Paste full details. Add hero + gallery photos (up to 15 per hotel).', hasPhotos: true },
+  transfer: { icon: '🚐',  label: 'Transfer',          pickOne: false, maxOpts: 4,  hint: 'Airport, hotel, port transfers. If included with hotel or package, mark Included.' },
+  tour:     { icon: '🗺️', label: 'Tour / Excursion',  pickOne: false, maxOpts: 8,  hint: 'Each option is a selectable add-on. Label with date — e.g. "Sunset Sailing Oct 9."' },
+  dinner:   { icon: '🍽️', label: 'Dinner / Dining',   pickOne: false, maxOpts: 8,  hint: 'Restaurant reservations, private dining, dinner cruises. Each is a selectable add-on.' },
+  rail:     { icon: '🚄',  label: 'Rail',              pickOne: true,  maxOpts: 4,  hint: 'Train segments. If offering route alternatives, add one option per alternative.' },
+  ferry:    { icon: '⛴️', label: 'Ferry',              pickOne: true,  maxOpts: 4,  hint: 'Ferry crossings — operator, route, times, cabin type if applicable.' },
+  ticket:   { icon: '🎟️', label: 'Ticket / Pass',     pickOne: false, maxOpts: 8,  hint: 'Attraction tickets, museum passes, events, city passes. Each is a selectable add-on.' },
+  car:      { icon: '🚗',  label: 'Car Rental',        pickOne: true,  maxOpts: 4,  hint: 'Rental options — company, vehicle, dates, pricing, coverage.' },
+  cruise:   { icon: '🚢',  label: 'Cruise',            pickOne: true,  maxOpts: 4,  hint: 'Cruise options — line, ship, cabin type, itinerary, packages, gratuities.' },
+  insurance:{ icon: '🛡️', label: 'Insurance',         pickOne: false, maxOpts: 4,  hint: 'Travel insurance options. Mark TBD if price depends on final booking total.' },
+};
+
+let cur = 0, showGuide = false, sectionCount = 0, outputs = new Set(['html']), pricingCount = 0;
+let optCounts = {}; // sectionId -> count
+
+// ── Nav ────────────────────────────────────────────────────────
+function buildNav() {
+  const te = document.getElementById('tabs'), pe = document.getElementById('prog');
+  te.innerHTML = ''; pe.innerHTML = '';
+  const vis = [0,1,2,3], pos = vis.indexOf(cur);
+  vis.forEach((idx, i) => {
+    const t = document.createElement('div');
+    t.className = 'tab' + (idx === cur && !showGuide ? ' active' : '');
+    t.textContent = STEPS[idx];
+    t.onclick = () => { showGuide = false; cur = idx; refresh(); };
+    te.appendChild(t);
+    const d = document.createElement('div');
+    d.className = 'pd' + (i <= pos ? ' done' : '');
+    pe.appendChild(d);
+  });
+  const gt = document.createElement('div');
+  gt.className = 'tab gtab' + (showGuide ? ' active' : '');
+  gt.textContent = 'Setup Guide';
+  gt.onclick = () => { showGuide = true; refresh(); };
+  te.appendChild(gt);
+  document.getElementById('pb').style.visibility = (!showGuide && pos > 0) ? 'visible' : 'hidden';
+  const nb = document.getElementById('nb2');
+  if (showGuide || pos >= vis.length - 1) { nb.style.display = 'none'; }
+  else { nb.style.display = 'block'; nb.textContent = pos === vis.length - 2 ? 'Generate ↗' : 'Next →'; }
+  document.getElementById('sl').textContent = showGuide ? 'Setup Guide' : (pos + 1) + ' of ' + vis.length;
+}
+
+function refresh() {
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
+  const t = showGuide ? document.querySelector('[data-s="99"]') : document.querySelector('[data-s="' + cur + '"]');
+  if (t) t.classList.add('active');
+  buildNav();
+  if (!showGuide && cur === 3) buildPrompt();
+}
+
+function nav(d) {
+  if (showGuide) return;
+  const vis = [0,1,2,3], pos = vis.indexOf(cur), np = pos + d;
+  if (np >= 0 && np < vis.length) { cur = vis[np]; refresh(); }
+}
+
+function toggleOut(el) {
+  const k = el.dataset.out;
+  if (outputs.has(k)) { outputs.delete(k); el.classList.remove('on'); el.querySelector('.oc-chk').textContent = ''; }
+  else { outputs.add(k); el.classList.add('on'); el.querySelector('.oc-chk').textContent = '✓'; }
+}
+
+// ── Add Section ────────────────────────────────────────────────
+function addSection() {
+  const sel = document.getElementById('newSectionType');
+  const type = sel.value;
+  if (!type) { sel.focus(); return; }
+  sectionCount++;
+  const sid = 'sec-' + sectionCount;
+  const meta = TYPE_META[type];
+  optCounts[sid] = 0;
+
+  // Hide empty state
+  document.getElementById('empty-state').style.display = 'none';
+
+  const c = document.getElementById('sections-container');
+  const d = document.createElement('div');
+  d.className = 'trip-section';
+  d.id = sid;
+  d.dataset.type = type;
+
+  d.innerHTML = `
+    <div class="ts-head">
+      <span class="ts-icon">${meta.icon}</span>
+      <div class="ts-meta">
+        <input class="ts-label-inp" placeholder="Label this section — e.g. Flights Oct 7, Hotels Cabo Oct 7–14, Tours June 2, Transfer Airport to Hotel">
+        <div class="ts-type-tag">${meta.label}${meta.pickOne ? ' — client picks one' : ' — selectable add-ons'}</div>
+      </div>
+      <div class="ts-controls">
+        <button class="ts-move" onclick="moveSection('${sid}',-1)" title="Move up">↑</button>
+        <button class="ts-move" onclick="moveSection('${sid}',1)" title="Move down">↓</button>
+        <button class="ts-rm" onclick="removeSection('${sid}')">remove</button>
+      </div>
+    </div>
+    <div class="ts-body">
+      <p class="hint" style="margin-bottom:10px;">${meta.hint}</p>
+      <div id="opts-${sid}"></div>
+      <button class="add-opt-btn" id="addopt-${sid}" onclick="addOption('${sid}','${type}')">+ Add ${meta.pickOne ? 'option' : 'item'}</button>
+    </div>`;
+  c.appendChild(d);
+
+  // Auto-add first option
+  addOption(sid, type);
+
+  // Reset select
+  sel.value = '';
+}
+
+function removeSection(sid) {
+  const el = document.getElementById(sid);
+  if (el) el.remove();
+  const c = document.getElementById('sections-container');
+  if (!c.querySelector('.trip-section')) {
+    document.getElementById('empty-state').style.display = '';
+  }
+}
+
+function moveSection(sid, dir) {
+  const el = document.getElementById(sid);
+  const c = document.getElementById('sections-container');
+  const sections = [...c.querySelectorAll('.trip-section')];
+  const idx = sections.indexOf(el);
+  const target = sections[idx + dir];
+  if (!target) return;
+  if (dir === -1) c.insertBefore(el, target);
+  else c.insertBefore(target, el);
+}
+
+// ── Add Option ─────────────────────────────────────────────────
+function addOption(sid, type) {
+  const meta = TYPE_META[type];
+  optCounts[sid] = (optCounts[sid] || 0) + 1;
+  if (optCounts[sid] > meta.maxOpts) { optCounts[sid]--; return; }
+  const optId = sid + '-opt-' + optCounts[sid];
+  const optNum = optCounts[sid];
+  const c = document.getElementById('opts-' + sid);
+  const d = document.createElement('div');
+  d.className = 'option-card';
+  d.id = optId;
+
+  const isHotel = type === 'hotel';
+  const optLabel = meta.pickOne ? 'Option ' + optNum : 'Item ' + optNum;
+
+  d.innerHTML = `
+    <div class="opt-head">
+      <span class="opt-label">${optLabel}</span>
+      <button class="rm" onclick="document.getElementById('${optId}').remove()">remove</button>
+    </div>
+    ${!meta.pickOne ? `<div class="field"><label style="font-size:10.5px;">Label — include date/name, e.g. "Sunset Sailing Oct 9" or "Louvre June 3"</label><input class="opt-label-inp" placeholder="e.g. Zip-line Tour Oct 9, Eiffel Tower June 2, Airport Transfer Oct 7"></div>` : ''}
+    <div class="field" style="margin-bottom:6px;"><label style="font-size:10.5px;">Details — paste everything from VAX, confirmation email, or booking platform</label><textarea class="tall" placeholder="Paste all details here — property name, room type, check-in/out, inclusions, perks, pricing breakdown, promotions, advisories, non-refundable terms, flight times, tour inclusions, transfer details, etc."></textarea></div>
+    <div class="price-row">
+      <div>
+        <label style="font-size:10.5px;margin-bottom:4px;">Pricing</label>
+        <div class="ps-btns">
+          <button class="ps-btn active-price" onclick="setPriceStatus('${optId}','price',this)">$ Price</button>
+          <button class="ps-btn" onclick="setPriceStatus('${optId}','tbd',this)">TBD</button>
+          <button class="ps-btn" onclick="setPriceStatus('${optId}','included',this)">Included</button>
+        </div>
+      </div>
+      <div class="price-inp-wrap show" id="piwrap-${optId}">
+        <label style="font-size:10.5px;">Amount — numbers only, no $ sign</label>
+        <input class="price-inp" placeholder="e.g. 1450.00">
+      </div>
+      <div style="align-self:end;">
+        <label style="font-size:10.5px;">Price applies to</label>
+        <select class="price-per">
+          <option value="total">Total (all guests)</option>
+          <option value="person">Per person</option>
+          <option value="room">Per room / per night</option>
+          <option value="stay">Per stay</option>
+        </select>
+      </div>
+    </div>
+    ${isHotel ? `
+    <div class="photo-area">
+      <div class="photo-area-title">Photos — optional, HTML page only</div>
+      <div class="field"><label style="font-size:10.5px;">Hero Image URL — right-click hotel photo → Copy Image Address</label><input class="hero-url" placeholder="https://..." oninput="prevHotel(this.closest('.option-card'))"></div>
+      <div class="field"><label style="font-size:10.5px;">Gallery URLs — one per line, up to 15 (open full-screen lightbox on click)</label><textarea class="short gallery-urls" placeholder="https://photo1.jpg&#10;https://photo2.jpg&#10;https://photo3.jpg" oninput="prevHotel(this.closest('.option-card'))"></textarea></div>
+      <div class="photo-preview"></div>
+    </div>` : `
+    <div class="photo-area" style="display:flex;gap:8px;align-items:flex-start;">
+      <div style="flex:1;"><label style="font-size:10.5px;">Photo URL — optional (right-click any relevant photo → Copy Image Address)</label><input class="single-img-url" placeholder="https://..." oninput="prevSingle(this)"></div>
+      <div class="img-preview-wrap" style="margin-top:20px;"></div>
+    </div>`}`;
+  c.appendChild(d);
+
+  // Disable add button if maxed
+  const btn = document.getElementById('addopt-' + sid);
+  if (btn) btn.disabled = optCounts[sid] >= meta.maxOpts;
+}
+
+// ── Price status ───────────────────────────────────────────────
+function setPriceStatus(optId, status, btn) {
+  const card = document.getElementById(optId);
+  // Reset all buttons in this card
+  card.querySelectorAll('.ps-btn').forEach(b => b.className = 'ps-btn');
+  const wrap = document.getElementById('piwrap-' + optId);
+  if (status === 'price') { btn.className = 'ps-btn active-price'; wrap.classList.add('show'); }
+  else if (status === 'tbd') { btn.className = 'ps-btn active-tbd'; wrap.classList.remove('show'); }
+  else { btn.className = 'ps-btn active-inc'; wrap.classList.remove('show'); }
+  card.dataset.priceStatus = status;
+}
+
+// ── Photo previews ─────────────────────────────────────────────
+function prevHotel(card) {
+  const hero = card.querySelector('.hero-url')?.value.trim() || '';
+  const gallery = card.querySelector('.gallery-urls')?.value.trim() || '';
+  const urls = [hero, ...gallery.split('\n').map(u => u.trim())].filter(Boolean).slice(0, 16);
+  const prev = card.querySelector('.photo-preview');
+  if (!prev) return;
+  prev.innerHTML = '';
+  urls.forEach(url => {
+    const img = document.createElement('img');
+    img.src = url; img.loading = 'lazy';
+    img.onerror = function () { const b = document.createElement('div'); b.className = 'ph-broken'; b.textContent = 'err'; prev.replaceChild(b, this); };
+    prev.appendChild(img);
+  });
+}
+
+function prevSingle(input) {
+  const wrap = input.closest('.photo-area').querySelector('.img-preview-wrap');
+  const url = input.value.trim();
+  if (!url) { wrap.innerHTML = ''; return; }
+  const img = document.createElement('img');
+  img.loading = 'lazy'; img.src = url;
+  img.onerror = () => { wrap.innerHTML = '<div class="img-broken-s">broken</div>'; };
+  wrap.innerHTML = ''; wrap.appendChild(img);
+}
+
+// ── Pricing lines ──────────────────────────────────────────────
+function addPriceLine() {
+  pricingCount++;
+  const c = document.getElementById('pc');
+  const d = document.createElement('div');
+  d.className = 'option-card'; d.style.padding = '8px 12px';
+  d.innerHTML = `<div class="row2" style="align-items:center;">
+    <input placeholder="Label — e.g. International Flights, Port Taxes, Gratuities">
+    <div style="display:flex;gap:6px;align-items:center;"><input placeholder="e.g. $1,200.00"><button class="rm" onclick="this.closest('.option-card').remove()">✕</button></div>
+  </div>`;
+  c.appendChild(d);
+}
+
+// ── Helpers ────────────────────────────────────────────────────
+function gv(id) { const e = document.getElementById(id); return e ? e.value.trim() : ''; }
+
+function getPriceStatus(card) {
+  const status = card.dataset.priceStatus || 'price';
+  const priceInp = card.querySelector('.price-inp');
+  const pricePer = card.querySelector('.price-per');
+  if (status === 'included') return { status: 'included', price: null, per: null };
+  if (status === 'tbd') return { status: 'tbd', price: null, per: null };
+  const price = priceInp?.value.trim();
+  const per = pricePer?.value || 'total';
+  return { status: 'price', price: price || null, per };
+}
+
+// ── Build prompt ───────────────────────────────────────────────
+function buildPrompt() {
+  const doHTML = outputs.has('html'), doPDF = outputs.has('pdf'), doDOCX = outputs.has('docx');
+  const outList = [doHTML && 'HTML selection page with live calculator', doPDF && 'PDF quote', doDOCX && 'Word document (.docx)'].filter(Boolean).join(' + ');
+  const agentName = gv('agentName') || 'Christina Garcia';
+  const agentEmail = gv('agentEmail') || 'Christina@PointMeToParadise.com';
+  const agentPhone = gv('agentPhone') || '(281) 229-0862';
+  const w3key = gv('w3key') || '7b40d437-1004-48e2-9031-171a8b0ef4f1';
+  const ghUrl = gv('ghUrl') || 'https://pointmetoparadise.github.io/pmtp-quotes/';
+  const emailUser = agentEmail.split('@')[0], emailDomain = agentEmail.split('@')[1] || 'PointMeToParadise.com';
+
+  let p = 'Build: ' + outList + '\n\n';
+  p += '=== AGENT ===\n' + agentName + ' | ' + agentEmail + ' | ' + agentPhone + '\n';
+  p += 'Agency: Point Me to Paradise Travel | Tagline: Custom. Curated. Yours.\n';
+  p += 'Web3Forms Key: ' + w3key + ' | GitHub Base: ' + ghUrl + '\n';
+
+  p += '\n=== TRIP ===\n';
+  if (gv('tripTitle')) p += 'Title: ' + gv('tripTitle') + '\n';
+  if (gv('cn')) p += 'Client: ' + gv('cn') + '\n';
+  if (gv('dates')) p += 'Dates: ' + gv('dates') + '\n';
+  if (gv('guests')) p += 'Guests: ' + gv('guests') + '\n';
+  if (gv('tt')) p += 'Trip Type: ' + gv('tt') + '\n';
+  if (gv('openPara')) p += 'Opening Paragraph: ' + gv('openPara') + '\n';
+  if (gv('sn')) p += 'Notes: ' + gv('sn') + '\n';
+
+  // Sections
+  const sections = document.querySelectorAll('.trip-section');
+  if (sections.length) {
+    p += '\n=== TRIP COMPONENTS (in chronological order as agent built them) ===\n';
+    p += 'Display each section in the exact order listed below.\n\n';
+    p += 'PRICING RULES:\n';
+    p += '  $ Price — include in live calculator\n';
+    p += '  Included — show green "Included ✓" badge, no price, no checkbox\n';
+    p += '  TBD — show "Contact your advisor for pricing", checkbox shown but no calculator effect, captured in form submission\n';
+    p += '  pick-one sections (Flights, Hotels, Rail, Ferry, Car, Cruise) → radio buttons, client selects one\n';
+    p += '  add-on sections (Tours, Dinner, Tickets, Transfers, Insurance) → checkboxes, client selects any\n\n';
+
+    sections.forEach((sec, si) => {
+      const type = sec.dataset.type;
+      const meta = TYPE_META[type];
+      const labelInp = sec.querySelector('.ts-label-inp');
+      const sLabel = labelInp?.value.trim() || meta.label + ' ' + (si + 1);
+      p += '--- SECTION ' + (si + 1) + ': ' + sLabel + ' [' + meta.label.toUpperCase() + '] ---\n';
+      p += 'Selection: ' + (meta.pickOne ? 'pick one (radio)' : 'select any (checkboxes)') + '\n';
+
+      const opts = sec.querySelectorAll('.option-card');
+      opts.forEach((opt, oi) => {
+        const optLabelInp = opt.querySelector('.opt-label-inp');
+        const ta = opt.querySelector('textarea');
+        const ps = getPriceStatus(opt);
+        const heroIn = opt.querySelector('.hero-url');
+        const galleryIn = opt.querySelector('.gallery-urls');
+        const singleImg = opt.querySelector('.single-img-url');
+
+        p += '  Option ' + (oi + 1) + (optLabelInp?.value.trim() ? ' — ' + optLabelInp.value.trim() : '') + ':\n';
+        if (ta?.value.trim()) p += '    Details: ' + ta.value.trim() + '\n';
+
+        if (ps.status === 'included') p += '    Pricing: INCLUDED — show green "Included ✓" badge\n';
+        else if (ps.status === 'tbd') p += '    Pricing: TBD — show "Contact your advisor for pricing"\n';
+        else if (ps.price) p += '    Pricing: $' + ps.price + ' ' + ps.per + '\n';
+
+        if (heroIn?.value.trim()) p += '    HERO_IMAGE: ' + heroIn.value.trim() + '\n';
+        if (galleryIn?.value.trim()) galleryIn.value.trim().split('\n').map(u => u.trim()).filter(Boolean).slice(0, 15).forEach((u, j) => { p += '    GALLERY_' + (j + 1) + ': ' + u + '\n'; });
+        if (singleImg?.value.trim()) p += '    SECTION_IMAGE: ' + singleImg.value.trim() + '\n';
+      });
+      p += '\n';
+    });
+  }
+
+  // Pricing summary
+  const pbs = document.querySelectorAll('#pc .option-card');
+  p += '\n=== PRICING SUMMARY ===\n';
+  if (gv('bp')) p += 'Base Price: $' + gv('bp') + '\n';
+  pbs.forEach(b => { const ins = b.querySelectorAll('input'); if (ins[0]?.value && ins[1]?.value) p += ins[0].value.trim() + ': ' + ins[1].value.trim() + '\n'; });
+  if (gv('gt')) p += 'Grand Total: $' + gv('gt') + '\n';
+  if (gv('da')) p += 'Deposit: $' + gv('da') + '\n';
+  if (gv('dd')) p += 'Deposit Due: ' + gv('dd') + '\n';
+  if (gv('fp')) p += 'Full Payment Due: ' + gv('fp') + '\n';
+  if (gv('currency')) p += 'Currency: ' + gv('currency') + '\n';
+  if (gv('pn')) p += 'Payment Notes: ' + gv('pn') + '\n';
+
+  if (doHTML) {
+    p += '\n=== HTML BUILD INSTRUCTIONS ===\n';
+    p += 'Single self-contained .html file.\n';
+    p += 'Colors: --teal:#75AFB1 --gold:#DAC396 --pale:#C4E4E1 --cream:#F5EFE0 --dark:#2C2C2C --mid:#5a5a5a. Page bg: cream.\n';
+    p += 'Fonts: Cormorant Garamond (titles) + Jost (body) from Google Fonts.\n';
+    p += 'Header: teal band + 4px gold accent bar. Agency + tagline left. Agent name/email/phone right.\n';
+    p += 'Footer: teal band. Contact info left. "Prices and availability are subject to change until booked." right, italic.\n';
+    p += 'Trip title: large Cormorant Garamond heading at top. Opening paragraph below in Jost.\n';
+    p += '\nLAYOUT — display sections in exact order provided:\n';
+    p += 'Each section = labeled block with the section label as its heading.\n';
+    p += 'pick-one sections → styled clickable cards, teal border + gold checkmark on select.\n';
+    p += 'Hotels → full card treatment: hero image, expandable details, lightbox gallery (up to 15 photos, left/right arrows, click outside to close), lazy load all images.\n';
+    p += 'add-on sections → checkbox items with label, price/TBD/Included badge, expandable details, optional section image.\n';
+    p += 'Included items → green "Included ✓" teal-green badge, no checkbox, no price shown.\n';
+    p += 'TBD items → checkbox shown, price column shows "Contact your advisor for pricing" in italic.\n';
+    p += '\nCALCULATOR:\n';
+    p += 'Sticky "Your Estimated Total: $X,XXX.XX" panel — visible as client scrolls.\n';
+    p += 'Base = fixed costs. pick-one sections: selecting an option adds its price, deselecting previous removes it. add-on checkboxes: check = add, uncheck = subtract. Included = no effect. TBD = no effect but captured in submission. Updates instantly on every click. Format $X,XXX.XX.\n';
+    p += '\nFORM:\n';
+    p += 'Web3Forms: https://api.web3forms.com/submit key ' + w3key + '.\n';
+    p += 'Captures: client name, email, phone, notes, full selection summary (every section: which option selected or which items checked), estimated total.\n';
+    p += 'Hidden fields: access_key, subject="New Selection — ' + (gv('tripTitle') || gv('cn') || 'Quote') + '", from_name="Point Me to Paradise Travel", Selected Items, Estimated Total. Botcheck honeypot (display:none).\n';
+    p += 'Success screen after submit. No redirect.\n';
+    p += 'CRITICAL — Cloudflare: NEVER write ' + agentEmail + ' as plain text. Use: (function(){var u="' + emailUser + '",d="' + emailDomain + '";document.querySelectorAll(".agent-email").forEach(el=>el.textContent=u+"@"+d);})();\n';
+    p += 'Mobile responsive.\n';
+    if (gv('tt')) p += 'Trip type: ' + gv('tt') + ' — tailor tone accordingly.\n';
+  }
+
+  if (doPDF) {
+    p += '\n=== PDF BUILD INSTRUCTIONS ===\n';
+    p += 'Python + ReportLab canvas (NOT SimpleDocTemplate). pip install Pillow --break-system-packages -q\n';
+    p += 'Output: /mnt/user-data/outputs/' + ((gv('cn') || 'Client').replace(/\s+/g, '_')) + '_Quote.pdf\n';
+    p += 'Page: letter 612x792pt. Background WHITE #FFFFFF. Margin 40pt. INNER_W 532pt. Safe zone y=700 to y=60.\n';
+    p += 'Colors: TEAL=#75AFB1 GOLD=#DAC396 PALE=#C4E4E1 WHITE=#FFFFFF DARK=#2C2C2C MID=#4A4A4A RED=#C0392B\n';
+    p += 'Header every page: teal 80pt + 4pt gold bar. Agency left (Helvetica-Bold 18pt white). Quote type right (13pt gold). Tagline (10pt pale teal italic). Agent name (9pt pale teal).\n';
+    p += 'Footer every page: teal 46pt. "' + agentName + ' | Point Me to Paradise Travel" + "' + agentEmail + ' | ' + agentPhone + '" left. Disclaimer right (7.5pt pale teal italic).\n';
+    p += 'Display sections in exact order provided. Included = pale teal "Included" label. TBD = "Price TBD — contact your advisor." Pre-calculate all y-coords. No emojis. Section bands 22pt. 2-col bullets 8+ items.\n';
+    p += 'Closing blurb final page teal rounded rect: "At Point Me to Paradise Travel, we know that paradise looks different for everyone. For some, it\'s an overwater bungalow in Bora Bora. For others, it\'s a cobblestone street in Rome — or a family reunion on a cruise ship. That\'s why we don\'t do cookie-cutter travel. We do yours. Our expert advisors build custom, curated trips built on your vision and our expertise — with insider access, trusted relationships, and every detail handled. You just show up. Your paradise is out there. Let us point you to it. Point Me to Paradise Travel — the world is your oyster, we are your pearl."\n';
+  }
+
+  if (doDOCX) {
+    p += '\n=== DOCX BUILD INSTRUCTIONS ===\n';
+    p += 'Node.js + docx. npm install -g docx. Output: /mnt/user-data/outputs/' + ((gv('cn') || 'Client').replace(/\s+/g, '_')) + '_Quote.docx\n';
+    p += 'Page: US Letter 12240x15840 DXA. Margins 1080 DXA. Background WHITE.\n';
+    p += 'Colors: TEAL=75AFB1 GOLD=DAC396 PALE=C4E4E1 DARK=2C2C2C WHITE=FFFFFF. Font: Arial.\n';
+    p += 'Display sections in exact chronological order provided. Included = "Included ✓" note. TBD = "Price TBD" note.\n';
+    p += 'CRITICAL: No unicode bullets — LevelFormat.BULLET. No \\n in TextRun. Tables: columnWidths + cell width WidthType.DXA only. ShadingType.CLEAR. PageBreak in Paragraph. Tab stops for footer. Cell margins top:80 bottom:80 left:120 right:120.\n';
+    p += 'Header: teal table, Georgia 40pt bold white agency name, Arial italic pale teal tagline, agent contact.\n';
+    p += 'Gold accent bar: paragraph with gold bottom border.\n';
+    p += 'Section bands: full-width teal cell, white Arial bold uppercase.\n';
+    p += 'Footer every page: "' + agentName + ' | Point Me to Paradise Travel" tab disclaimer. Tab stops.\n';
+    p += 'Closing blurb: teal table cell, white text, same wording as PDF.\n';
+  }
+
+  document.getElementById('out').textContent = p;
+}
+
+function doCopy() {
+  navigator.clipboard.writeText(document.getElementById('out').textContent).then(() => {
+    const m = document.getElementById('cpd');
+    m.style.display = 'block';
+    setTimeout(() => m.style.display = 'none', 2500);
+  });
+}
+
+refresh();
+</script>
+</body>
+</html>
