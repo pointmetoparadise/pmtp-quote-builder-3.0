@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMTP Quote Builder 3.0 — Point Me to Paradise Travel</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%2375AFB1'/><text y='72' x='50' text-anchor='middle' font-size='62' font-family='Georgia,serif' font-weight='bold' fill='%23DAC396'>P</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Jost',sans-serif;background:#F5EFE0;color:#2C2C2C;min-height:100vh;display:flex;flex-direction:column;}
+header{background:#75AFB1;padding:20px 40px 16px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px;position:relative;}
+header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;background:#DAC396;}
+.agency-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#fff;}
+.tagline{font-size:11px;color:#C4E4E1;font-style:italic;margin-top:2px;}
+.hdr-right{text-align:right;color:#C4E4E1;font-size:11.5px;line-height:1.7;}
+.hdr-right strong{color:#fff;font-weight:500;}
+main{flex:1;max-width:860px;margin:0 auto;padding:36px 20px 60px;width:100%;}
+.tool-title{font-family:'Cormorant Garamond',serif;font-size:30px;color:#5a9092;margin-bottom:4px;}
+.tool-sub{font-size:13px;color:#5a5a5a;margin-bottom:24px;}
+/* ── all tool styles ── */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;}
+.tab{padding:5px 12px;font-size:11.5px;border:1px solid #ccc;border-radius:20px;background:#fff;color:#5a5a5a;cursor:pointer;transition:all .15s;}
+.tab:hover{border-color:#75AFB1;color:#5a9092;}
+.tab.active{background:#75AFB1;color:#fff;border-color:#75AFB1;}
+.tab.guide{background:rgba(218,195,150,0.2);border-color:#DAC396;color:#8a6a20;}
+.tab.guide:hover{background:rgba(218,195,150,0.35);}
+.prog{display:flex;gap:3px;margin-bottom:14px;}
+.pd{height:3px;flex:1;border-radius:2px;background:#ddd;}
+.pd.done{background:#75AFB1;}
+.sec{display:none;}
+.sec.active{display:block;}
+.sec-title{font-size:14px;font-weight:600;color:#2C2C2C;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+.badge{background:#75AFB1;color:#fff;font-size:10px;padding:2px 7px;border-radius:20px;}
+.badge.opt{background:#DAC396;color:#7a6030;}
+.hint{font-size:11.5px;color:#5a5a5a;margin-bottom:12px;line-height:1.5;}
+.hint b{color:#2C2C2C;}
+.field{margin-bottom:12px;}
+label{display:block;font-size:11.5px;color:#5a5a5a;margin-bottom:3px;font-weight:500;}
+input,textarea,select{width:100%;border:1px solid #ccc;border-radius:8px;padding:8px 10px;font-size:13px;font-family:'Jost',sans-serif;background:#fff;color:#2C2C2C;resize:vertical;transition:border-color .15s;}
+input:focus,textarea:focus,select:focus{outline:none;border-color:#75AFB1;box-shadow:0 0 0 3px rgba(117,175,177,0.15);}
+textarea{min-height:90px;}
+textarea.tall{min-height:120px;}
+textarea.short{min-height:52px;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+@media(max-width:540px){.row2,.row3{grid-template-columns:1fr;}}
+.add-btn{font-size:12px;color:#75AFB1;border:1px dashed #75AFB1;background:none;border-radius:8px;padding:7px 12px;cursor:pointer;margin-bottom:12px;width:100%;transition:background .15s;}
+.add-btn:hover{background:rgba(117,175,177,0.08);}
+.add-btn:disabled{opacity:.4;cursor:not-allowed;}
+.card{border:1px solid #e0e0e0;border-radius:10px;padding:14px;margin-bottom:12px;background:#fafaf8;}
+.card-head{font-size:12px;font-weight:600;color:#5a5a5a;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
+.rm{font-size:11px;color:#999;border:none;background:none;cursor:pointer;padding:2px 6px;}
+.rm:hover{color:#c0392b;}
+.leg-card{border:1.5px solid #ccc;border-radius:12px;margin-bottom:16px;overflow:hidden;}
+.leg-head{background:rgba(117,175,177,0.1);padding:10px 14px;display:flex;align-items:center;gap:10px;justify-content:space-between;cursor:pointer;border-bottom:1px solid #e0e0e0;}
+.leg-head-left{display:flex;align-items:center;gap:8px;}
+.leg-num{width:26px;height:26px;border-radius:50%;background:#75AFB1;color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.leg-name-input{border:none;background:transparent;font-size:13px;font-weight:600;color:#2C2C2C;padding:0;width:180px;font-family:'Jost',sans-serif;}
+.leg-dates-input{border:none;background:transparent;font-size:11px;color:#5a5a5a;padding:0;width:180px;font-family:'Jost',sans-serif;}
+.leg-toggle{font-size:11px;color:#5a5a5a;transition:transform .2s;}
+.leg-toggle.open{transform:rotate(180deg);}
+.leg-body{padding:14px;display:none;}
+.leg-body.open{display:block;}
+.sub-sec-title{font-size:11.5px;font-weight:600;color:#2C2C2C;background:rgba(218,195,150,0.2);border-left:3px solid #DAC396;padding:5px 9px;border-radius:0 5px 5px 0;margin-bottom:8px;}
+.img-row{display:flex;gap:8px;align-items:flex-start;padding-top:8px;margin-top:8px;border-top:1px solid #eee;}
+.img-field{flex:1;}
+.img-preview{width:60px;height:45px;border-radius:6px;object-fit:cover;border:1px solid #ddd;flex-shrink:0;}
+.img-broken{width:60px;height:45px;border-radius:6px;border:1px dashed #ccc;display:flex;align-items:center;justify-content:center;font-size:9px;color:#999;flex-shrink:0;text-align:center;}
+.photo-preview{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;}
+.photo-preview img{width:50px;height:37px;object-fit:cover;border-radius:4px;border:1px solid #ddd;}
+.ph-broken{width:50px;height:37px;border-radius:4px;border:1px dashed #ccc;display:flex;align-items:center;justify-content:center;font-size:9px;color:#999;}
+.sec-toggle{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.sch{display:flex;align-items:center;gap:5px;padding:5px 11px;border:1px solid #ccc;border-radius:20px;cursor:pointer;font-size:12px;color:#5a5a5a;background:#fff;user-select:none;transition:all .15s;}
+.sch:hover{border-color:#75AFB1;}
+.sch.on{background:rgba(117,175,177,0.12);border-color:#75AFB1;color:#5a9092;}
+.dot{width:7px;height:7px;border-radius:50%;background:#ccc;}
+.sch.on .dot{background:#75AFB1;}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid #e8e8e8;}
+.nb{padding:8px 18px;font-size:13px;border-radius:8px;cursor:pointer;border:1px solid #ccc;background:#fff;color:#2C2C2C;transition:background .15s;}
+.nb:hover{background:#f5f5f5;}
+.out{background:#f5f0e8;border:1px solid #e0d8c8;border-radius:10px;padding:14px;font-size:11.5px;font-family:monospace;color:#2C2C2C;white-space:pre-wrap;line-height:1.6;max-height:400px;overflow-y:auto;margin-bottom:12px;}
+.copy-btn{width:100%;padding:10px;font-size:13.5px;font-weight:600;border-radius:10px;cursor:pointer;border:1.5px solid #75AFB1;background:rgba(117,175,177,0.1);color:#5a9092;transition:background .15s;}
+.copy-btn:hover{background:rgba(117,175,177,0.2);}
+.copied{color:#2ecc71;font-size:12px;text-align:center;margin-top:6px;display:none;}
+.output-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;}
+@media(max-width:480px){.output-cards{grid-template-columns:1fr;}}
+.oc{border:2px solid #ddd;border-radius:12px;padding:12px;cursor:pointer;text-align:center;background:#fff;transition:all .15s;user-select:none;}
+.oc:hover{border-color:#75AFB1;}
+.oc.on{border-color:#75AFB1;background:rgba(117,175,177,0.07);}
+.oc-icon{font-size:22px;margin-bottom:5px;}
+.oc-label{font-size:12.5px;font-weight:600;color:#2C2C2C;}
+.oc-sub{font-size:10.5px;color:#5a5a5a;margin-top:3px;line-height:1.4;}
+.oc-check{width:17px;height:17px;border-radius:50%;border:1.5px solid #ccc;margin:7px auto 0;display:flex;align-items:center;justify-content:center;font-size:10px;}
+.oc.on .oc-check{background:#75AFB1;border-color:#75AFB1;color:#fff;}
+.agent-box{background:#f5f0e8;border:1px solid #e0d8c8;border-radius:12px;padding:14px;margin-bottom:16px;}
+.agent-title{font-size:10.5px;font-weight:600;color:#5a5a5a;margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em;}
+.divider{border:none;border-top:1px solid #e8e8e8;margin:14px 0;}
+/* Guide */
+.gs{margin-bottom:22px;}
+.gs-title{font-size:13px;font-weight:600;color:#2C2C2C;background:rgba(117,175,177,0.1);border-left:3px solid #75AFB1;padding:8px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;}
+.step{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start;}
+.sn{min-width:24px;height:24px;border-radius:50%;background:#75AFB1;color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.sb2{font-size:12.5px;color:#2C2C2C;line-height:1.65;}
+.sn2{font-size:11px;color:#5a5a5a;margin-top:3px;font-style:italic;}
+.cp{display:inline-block;background:#f0ebe0;border:1px solid #ddd;border-radius:4px;padding:1px 6px;font-family:monospace;font-size:11px;color:#2C2C2C;}
+.wb{background:rgba(218,195,150,0.2);border:1px solid #DAC396;border-radius:8px;padding:10px 13px;font-size:12px;color:#2C2C2C;margin:8px 0;line-height:1.65;}
+.okb{background:rgba(117,175,177,0.1);border:1px solid #75AFB1;border-radius:8px;padding:10px 13px;font-size:12px;color:#2C2C2C;margin:8px 0;line-height:1.65;}
+footer{background:#75AFB1;padding:16px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+footer .fl{color:#fff;font-size:12px;font-weight:500;}
+footer .fr{color:#C4E4E1;font-size:11px;font-style:italic;}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="agency-name">Point Me to Paradise Travel</div>
+    <div class="tagline">Custom. Curated. Yours.</div>
+  </div>
+  <div class="hdr-right">
+    <strong>Quote Builder 3.0</strong><br>
+    For PMTP Travel Advisors
+  </div>
+</header>
+
+<main>
+  <h1 class="tool-title">Quote Builder 3.0</h1>
+  <p class="tool-sub">Version 3.0 — Multi-leg trips, live calculator, all output formats. Fill in your trip details — paste raw info from any source. Hit Generate to get a ready-to-use Claude prompt.</p>
+
+  <div class="prog" id="prog"></div>
+  <div class="tabs" id="tabs"></div>
+  <div id="sw">
+
+  <!-- OVERVIEW -->
+  <div class="sec active" data-s="0">
+    <div class="sec-title">Agent & Trip Info <span class="badge">required</span></div>
+    <div class="agent-box">
+      <div class="agent-title">Your Information</div>
+      <div class="row3">
+        <div class="field"><label>Your Full Name</label><input id="agentName" placeholder="e.g. Christina Garcia"></div>
+        <div class="field"><label>Your Email</label><input id="agentEmail" placeholder="e.g. Christina@PointMeToParadise.com"></div>
+        <div class="field"><label>Your Phone</label><input id="agentPhone" placeholder="e.g. (281) 229-0862"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Web3Forms Access Key</label><input id="w3key" placeholder="Paste your access key here"></div>
+        <div class="field"><label>GitHub Pages Base URL</label><input id="ghUrl" placeholder="https://pointmetoparadise.github.io/pmtp-quotes/"></div>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Trip Title</label><input id="tripTitle" placeholder="e.g. Your European Adventure, The Beede Honeymoon"></div>
+      <div class="field"><label>Client Name(s)</label><input id="cn" placeholder="e.g. Sarah & James Beede"></div>
+    </div>
+    <div class="field"><label>Opening Paragraph — shown at top of quote</label><textarea class="short" id="openPara" placeholder="e.g. I am so excited to put together this adventure for you! Below you will find everything organized by city and date..."></textarea></div>
+    <div class="row3">
+      <div class="field"><label>Overall Travel Dates</label><input id="dates" placeholder="e.g. June 1–14, 2027"></div>
+      <div class="field"><label>Number of Guests</label><input id="guests" placeholder="e.g. 2 Adults"></div>
+      <div class="field"><label>Trip Type</label>
+        <select id="tt">
+          <option value="">Select...</option>
+          <option>Honeymoon</option><option>Anniversary</option><option>Family Vacation</option>
+          <option>Girls Trip</option><option>Group Travel</option><option>Corporate Group</option>
+          <option>Solo Travel</option><option>Cruise</option><option>Adventure Travel</option>
+          <option>General Vacation</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Additional Notes for Claude</label><textarea class="short" id="sn" placeholder="Special context — dietary needs, mobility, budget sensitivity, first international trip, etc."></textarea></div>
+    <hr class="divider">
+    <div class="sec-title" style="margin-bottom:6px;">Output Format <span class="badge opt">choose one or more</span></div>
+    <div class="output-cards">
+      <div class="oc on" data-out="html" onclick="toggleOut(this)"><div class="oc-icon">🌐</div><div class="oc-label">HTML Page</div><div class="oc-sub">Interactive, live calculator, GitHub Pages</div><div class="oc-check">✓</div></div>
+      <div class="oc" data-out="pdf" onclick="toggleOut(this)"><div class="oc-icon">📄</div><div class="oc-label">PDF Quote</div><div class="oc-sub">Print-ready, Python + ReportLab</div><div class="oc-check"></div></div>
+      <div class="oc" data-out="docx" onclick="toggleOut(this)"><div class="oc-icon">📝</div><div class="oc-label">Word Doc</div><div class="oc-sub">Branded .docx, Node.js + docx</div><div class="oc-check"></div></div>
+    </div>
+    <hr class="divider">
+    <div class="sec-title" style="margin-bottom:6px;">Global Sections <span class="badge opt">whole-trip items</span></div>
+    <p class="hint">These apply to the whole trip. Per-destination hotels and activities go in Trip Legs.</p>
+    <div class="sec-toggle" id="st">
+      <div class="sch on" data-k="flights"><span class="dot"></span>Flights</div>
+      <div class="sch" data-k="cruise"><span class="dot"></span>Cruise</div>
+      <div class="sch" data-k="rail"><span class="dot"></span>Rail</div>
+      <div class="sch" data-k="car"><span class="dot"></span>Car Rental</div>
+      <div class="sch" data-k="insurance"><span class="dot"></span>Insurance</div>
+    </div>
+  </div>
+
+  <!-- FLIGHTS -->
+  <div class="sec" data-s="1" data-k="flights">
+    <div class="sec-title">Flights</div>
+    <div class="hint"><b>Paste mode.</b> One block per flight segment. If client is booking their own flights, add a block and note "Client booking independently — no price." Leave price blank and mark TBD.</div>
+    <div id="fc"></div>
+    <button class="add-btn" id="fc-add" onclick="addSimpleBlock('fc','Flight',8)">+ Add flight segment</button>
+  </div>
+
+  <!-- CRUISE -->
+  <div class="sec" data-s="2" data-k="cruise">
+    <div class="sec-title">Cruise</div>
+    <div class="hint"><b>Paste mode.</b> One block per cruise option.</div>
+    <div id="cc"></div>
+    <button class="add-btn" id="cc-add" onclick="addSimpleBlock('cc','Cruise Option',8)">+ Add cruise option</button>
+  </div>
+
+  <!-- RAIL -->
+  <div class="sec" data-s="3" data-k="rail">
+    <div class="sec-title">Rail</div>
+    <div class="hint"><b>Paste mode.</b> One block per rail segment.</div>
+    <div id="rc"></div>
+    <button class="add-btn" id="rc-add" onclick="addSimpleBlock('rc','Rail Segment',8)">+ Add rail segment</button>
+  </div>
+
+  <!-- CAR -->
+  <div class="sec" data-s="4" data-k="car">
+    <div class="sec-title">Car Rental</div>
+    <div class="hint"><b>Paste mode.</b> One block per rental option.</div>
+    <div id="carC"></div>
+    <button class="add-btn" id="carC-add" onclick="addSimpleBlock('carC','Car Rental',8)">+ Add car rental</button>
+  </div>
+
+  <!-- INSURANCE -->
+  <div class="sec" data-s="5" data-k="insurance">
+    <div class="sec-title">Travel Insurance</div>
+    <div class="hint"><b>Paste mode.</b> One block per option.</div>
+    <div id="ic"></div>
+    <button class="add-btn" id="ic-add" onclick="addSimpleBlock('ic','Insurance',8)">+ Add insurance option</button>
+  </div>
+
+  <!-- TRIP LEGS -->
+  <div class="sec" data-s="6">
+    <div class="sec-title">Trip Legs <span class="badge">hotels & activities per destination</span></div>
+    <div class="hint">One leg per city or location. Each leg has its own hotel options (client picks one), tours, dinner, transfers, ferry, and tickets. For a single-destination trip just use one leg. Up to 8 legs. Up to 6 hotel options per leg. Up to 8 activity items per type per leg.</div>
+    <div id="legs-container"></div>
+    <button class="add-btn" id="legs-add" onclick="addLeg()">+ Add trip leg</button>
+  </div>
+
+  <!-- PRICING -->
+  <div class="sec" data-s="7">
+    <div class="sec-title">Pricing & Calculator</div>
+    <div class="hint">The HTML quote page shows a live running total that updates as clients select hotels and check add-ons. TBD items appear in the quote but don't affect the total.</div>
+    <div id="pc"></div>
+    <button class="add-btn" onclick="addPriceLine()">+ Add pricing line</button>
+    <div class="row2" style="margin-top:8px;">
+      <div class="field"><label>Base Price (flights + fixed items)</label><input id="bp" placeholder="e.g. 1200.00 — numbers only, no $ sign"></div>
+      <div class="field"><label>Grand Total (leave blank if TBD)</label><input id="gt" placeholder="e.g. 8450.00"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Deposit Amount</label><input id="da" placeholder="e.g. 2000.00"></div>
+      <div class="field"><label>Deposit Due Date</label><input id="dd" placeholder="e.g. April 12, 2026"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Full Payment Due</label><input id="fp" placeholder="e.g. August 23, 2026"></div>
+      <div class="field"><label>Currency</label><input id="currency" placeholder="USD (default)"></div>
+    </div>
+    <div class="field"><label>Payment Notes</label><textarea class="short" id="pn" placeholder="e.g. Some items TBD pending hotel selection. Non-refundable items noted above."></textarea></div>
+  </div>
+
+  <!-- GENERATE -->
+  <div class="sec" data-s="8">
+    <div class="sec-title">Your Prompt is Ready</div>
+    <div class="hint">Copy this prompt and paste it into your PMTP Claude project.</div>
+    <div class="out" id="out"></div>
+    <button class="copy-btn" onclick="doCopy()">Copy Prompt</button>
+    <div class="copied" id="cpd">Copied to clipboard!</div>
+  </div>
+
+  <!-- SETUP GUIDE -->
+  <div class="sec" data-s="99">
+    <div class="sec-title">Setup Guide <span class="badge opt">one-time setup</span></div>
+    <div class="hint">Complete these steps once. After that, just fill in the tool and copy the prompt for every new quote.</div>
+
+    <div class="gs">
+      <div class="gs-title">Part 1 — Web3Forms (sends you an email every time a client submits)</div>
+      <div class="step"><div class="sn">1</div><div class="sb2">Go to <strong>web3forms.com</strong> in your browser. Click the big <strong>"Get Started Free"</strong> button.</div></div>
+      <div class="step"><div class="sn">2</div><div class="sb2">Type your <strong>work email address</strong> and click <strong>"Get your Access Key."</strong><div class="sn2">Use the email where you want to receive client selections.</div></div></div>
+      <div class="step"><div class="sn">3</div><div class="sb2">Check your email inbox. You will get a confirmation email from Web3Forms. <strong>Click the confirmation link inside it.</strong><div class="sn2">If you don't see it within 2 minutes, check your spam folder.</div></div></div>
+      <div class="step"><div class="sn">4</div><div class="sb2">After confirming, Web3Forms shows you your <strong>Access Key</strong> — a string of letters and numbers like: <span class="cp">7b40d437-1004-48e2-9031-171a8b0ef4f1</span>. Copy it and paste it into the Agent Info section of this builder. It never changes.</div></div>
+      <div class="step"><div class="sn">5</div><div class="sb2">You can log back in at <strong>app.web3forms.com</strong> any time to see all client submissions in a dashboard.</div></div>
+      <div class="okb">Done with Web3Forms. One key works for all quotes and all agents at your agency.</div>
+    </div>
+
+    <div class="gs">
+      <div class="gs-title">Part 2 — GitHub (hosts your client-facing HTML quote pages for free)</div>
+      <div class="step"><div class="sn">1</div><div class="sb2">Go to <strong>github.com</strong>. Click <strong>"Sign up"</strong> in the top right. Create a free account. Choose any username — your clients will never see it.</div></div>
+      <div class="step"><div class="sn">2</div><div class="sb2">Once logged in, click the <strong>"+"</strong> icon at the top right → click <strong>"New repository."</strong></div></div>
+      <div class="step"><div class="sn">3</div><div class="sb2">Name your repository <strong>pmtp-quotes</strong> (all lowercase, no spaces). Make sure <strong>"Public"</strong> is selected. Click <strong>"Create repository."</strong><div class="sn2">It must be Public — Private repos cannot use free GitHub Pages hosting.</div></div></div>
+      <div class="step"><div class="sn">4</div><div class="sb2">In the repo, click <strong>"Settings"</strong> in the top menu bar. In the left sidebar, scroll down and click <strong>"Pages."</strong></div></div>
+      <div class="step"><div class="sn">5</div><div class="sb2">Under <strong>"Branch,"</strong> click the dropdown that says "None" and select <strong>"main."</strong> Leave the folder as <strong>"/ (root)."</strong> Click <strong>"Save."</strong></div></div>
+      <div class="step"><div class="sn">6</div><div class="sb2">Wait about 2–3 minutes, then refresh the Pages screen. You will see a green banner that says <strong>"Your site is live at https://[yourusername].github.io/pmtp-quotes/"</strong><div class="sn2">Copy this URL and paste it into the Agent Info section of this builder. Every HTML file you upload will be live at this address.</div></div></div>
+      <div class="okb">GitHub is set up. You only ever do this once — just keep uploading files to the same repo forever.</div>
+    </div>
+
+    <div class="gs">
+      <div class="gs-title">Part 3 — Uploading a Quote Page (do this for every new quote)</div>
+      <div class="step"><div class="sn">1</div><div class="sb2">After Claude builds your HTML quote file, <strong>download it</strong> to your computer.</div></div>
+      <div class="step"><div class="sn">2</div><div class="sb2">Go to <strong>github.com/[yourusername]/pmtp-quotes</strong> — your repository page.</div></div>
+      <div class="step"><div class="sn">3</div><div class="sb2">Click <strong>"Add file"</strong> (top right area) → then click <strong>"Upload files."</strong></div></div>
+      <div class="step"><div class="sn">4</div><div class="sb2"><strong>Drag your HTML file</strong> into the upload box, or click <strong>"choose your files"</strong> to browse.</div></div>
+      <div class="step"><div class="sn">5</div><div class="sb2">Scroll down and click the green <strong>"Commit changes"</strong> button.</div></div>
+      <div class="step"><div class="sn">6</div><div class="sb2">Wait <strong>2–3 minutes.</strong> Your quote page is live at:<br><span class="cp">https://[yourusername].github.io/pmtp-quotes/[filename].html</span><div class="sn2">Example: if your file is cabo-beede-oct2026.html, the URL ends in .../cabo-beede-oct2026.html</div></div></div>
+      <div class="wb"><strong>Replacing a file:</strong> Upload a file with the same name to replace the old version. Wait 3 minutes then add <span class="cp">?v=2</span> to the end of the URL to force your browser to reload the new version.</div>
+      <div class="wb"><strong>Getting a 404 error?</strong> Wait 3 more minutes and try again. Check that the filename in the URL exactly matches what you uploaded — capital letters matter.</div>
+      <div class="okb">All quote pages live in the same repo. You never need to create a new repo.</div>
+    </div>
+
+    <div class="gs">
+      <div class="gs-title">Part 4 — Test Your Quote Page Before Sending to a Client</div>
+      <div class="step"><div class="sn">1</div><div class="sb2">Open your live quote URL in a browser.</div></div>
+      <div class="step"><div class="sn">2</div><div class="sb2"><strong>Select a hotel</strong> on each leg — the running total should update immediately.</div></div>
+      <div class="step"><div class="sn">3</div><div class="sb2"><strong>Check and uncheck</strong> optional add-on items — the total should update live each time.</div></div>
+      <div class="step"><div class="sn">4</div><div class="sb2">Fill in your own name and email in the form. Click <strong>"Submit My Selection."</strong></div></div>
+      <div class="step"><div class="sn">5</div><div class="sb2">The page should show a <strong>success screen.</strong> Check your inbox — a Web3Forms email should arrive within 1–2 minutes showing exactly what was selected and the estimated total.</div></div>
+      <div class="step"><div class="sn">6</div><div class="sb2">Once everything checks out, send the client their <strong>PDF quote.</strong> The last page has a gold button that links directly to their selection page.</div></div>
+    </div>
+  </div>
+
+  </div><!-- end sw -->
+
+  <div class="nav">
+    <button class="nb" id="pb" onclick="nav(-1)" style="visibility:hidden">← Back</button>
+    <span id="sl" style="font-size:12px;color:#5a5a5a;"></span>
+    <button class="nb" id="nb2" onclick="nav(1)">Next →</button>
+  </div>
+</main>
+
+<footer>
+  <div class="fl">Point Me to Paradise Travel Point Me to Paradise Travel &nbsp;·&nbsp; Quote Prompt Buildernbsp;·Point Me to Paradise Travel &nbsp;·&nbsp; Quote Prompt Buildernbsp; Quote Builder 3.0</div>
+  <div class="fr">For internal use by PMTP travel advisors</div>
+</footer>
+
+<script>
+const SECS=['Overview','Flights','Cruise','Rail','Car Rental','Insurance','Trip Legs','Pricing','Generate'];
+const KEYS=[null,'flights','cruise','rail','car','insurance',null,null,null];
+let cur=0,enabled=new Set(['flights']),outputs=new Set(['html']),showGuide=false;
+let legCount=0,simpleCounts={fc:0,cc:0,rc:0,carC:0,ic:0,pc:0};
+const MAX=8,MAX_HOTELS=6,MAX_ACTS=8;
+const ACT_TYPES=[
+  {k:'hotels',label:'Hotels',hint:'Up to 6 options — client selects one. Each adds its price to the running total.'},
+  {k:'tours',label:'Tours & Excursions',hint:'Group by day or date range. Label each item e.g. "Tours June 1" or "Wine Tasting June 3–4." Each is a selectable add-on.'},
+  {k:'dinner',label:'Dinner & Dining',hint:'Restaurant reservations, private dining, dinner cruises. Each is a selectable add-on.'},
+  {k:'transfers',label:'Transfers',hint:'Airport, hotel, and port transfers. Each is a selectable add-on.'},
+  {k:'ferry',label:'Ferry',hint:'Ferry crossings. Each is a selectable add-on.'},
+  {k:'tickets',label:'Tickets & Passes',hint:'Attraction tickets, museum passes, events, city passes. Each is a selectable add-on.'},
+];
+let legItemCounts={};
+
+function toggleOut(el){
+  const k=el.dataset.out;
+  if(outputs.has(k)){outputs.delete(k);el.classList.remove('on');el.querySelector('.oc-check').textContent='';}
+  else{outputs.add(k);el.classList.add('on');el.querySelector('.oc-check').textContent='✓';}
+}
+
+function getSteps(){
+  const s=[0];
+  [1,2,3,4,5].forEach(i=>{if(KEYS[i]&&enabled.has(KEYS[i]))s.push(i);});
+  s.push(6,7,8);
+  return s;
+}
+
+function buildNav(){
+  const te=document.getElementById('tabs'),pe=document.getElementById('prog');
+  te.innerHTML='';pe.innerHTML='';
+  const vis=getSteps(),pos=vis.indexOf(cur);
+  vis.forEach((idx,i)=>{
+    const t=document.createElement('div');
+    t.className='tab'+(idx===cur&&!showGuide?' active':'');
+    t.textContent=SECS[idx];
+    t.onclick=()=>{showGuide=false;cur=idx;refresh();};
+    te.appendChild(t);
+    const d=document.createElement('div');
+    d.className='pd'+(i<=pos?' done':'');
+    pe.appendChild(d);
+  });
+  const gt=document.createElement('div');
+  gt.className='tab guide'+(showGuide?' active':'');
+  gt.textContent='Setup Guide';
+  gt.onclick=()=>{showGuide=true;refresh();};
+  te.appendChild(gt);
+  document.getElementById('pb').style.visibility=(!showGuide&&pos>0)?'visible':'hidden';
+  const nb=document.getElementById('nb2');
+  if(showGuide||pos>=vis.length-1){nb.style.display='none';}
+  else{nb.style.display='block';nb.textContent=pos===vis.length-2?'Generate ↗':'Next →';}
+  document.getElementById('sl').textContent=showGuide?'Setup Guide':(pos+1)+' of '+vis.length;
+}
+
+function refresh(){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  (showGuide?document.querySelector('[data-s="99"]'):document.querySelector('[data-s="'+cur+'"]'))?.classList.add('active');
+  buildNav();
+  if(!showGuide&&cur===8)buildPrompt();
+}
+
+function nav(d){
+  if(showGuide)return;
+  const vis=getSteps(),pos=vis.indexOf(cur),np=pos+d;
+  if(np>=0&&np<vis.length){cur=vis[np];refresh();}
+}
+
+document.querySelectorAll('.sch').forEach(el=>{
+  el.addEventListener('click',()=>{
+    const k=el.dataset.k;
+    if(enabled.has(k)){enabled.delete(k);el.classList.remove('on');}
+    else{enabled.add(k);el.classList.add('on');}
+    buildNav();
+  });
+});
+
+function previewImg(input){
+  const wrap=input.closest('.img-row').querySelector('.img-preview-wrap');
+  const url=input.value.trim();
+  if(!url){wrap.innerHTML='';return;}
+  const img=document.createElement('img');
+  img.className='img-preview';img.src=url;img.loading='lazy';
+  img.onerror=()=>{wrap.innerHTML='<div class="img-broken">broken<br>URL</div>';};
+  wrap.innerHTML='';wrap.appendChild(img);
+}
+
+function addSimpleBlock(cid,label,max){
+  simpleCounts[cid]++;
+  if(simpleCounts[cid]>max){simpleCounts[cid]--;return;}
+  const c=document.getElementById(cid);
+  const d=document.createElement('div');
+  d.className='card';
+  d.innerHTML=`<div class="card-head"><span>${label} ${simpleCounts[cid]}</span><button class="rm" onclick="this.closest('.card').remove()">remove</button></div>
+  <textarea class="tall" placeholder="Paste all details here. If client is booking their own flights, write: Client booking independently — no price needed. Leave price blank and mark TBD."></textarea>
+  <div class="row2" style="margin-top:8px;">
+    <div class="field"><label>Price (optional, numbers only)</label><input class="item-price" placeholder="e.g. 450.00 — leave blank if TBD"></div>
+    <div class="field"><label>Price Status</label><select class="item-tbd"><option value="no">Known</option><option value="yes">TBD / Client booking</option></select></div>
+  </div>
+  <div class="img-row"><div class="img-field"><label style="font-size:10.5px;">Photo URL (optional)</label><input placeholder="https://..." oninput="previewImg(this)"></div><div class="img-preview-wrap"></div></div>`;
+  c.appendChild(d);
+  const btn=document.getElementById(cid+'-add');
+  if(btn&&simpleCounts[cid]>=max)btn.disabled=true;
+}
+
+function addLeg(){
+  if(legCount>=MAX)return;
+  legCount++;
+  const n=legCount;
+  const c=document.getElementById('legs-container');
+  const d=document.createElement('div');
+  d.className='leg-card';
+  d.id='leg-'+n;
+  let actHTML='';
+  ACT_TYPES.forEach(({k,label,hint})=>{
+    const isHotel=k==='hotels';
+    actHTML+=`<div style="margin-bottom:14px;">
+      <div class="sub-sec-title">${label}${isHotel?' — client selects one':' — optional add-ons'}</div>
+      <p class="hint" style="margin-bottom:6px;">${hint}</p>
+      <div id="leg${n}-${k}"></div>
+      <button class="add-btn" id="leg${n}-${k}-add" onclick="addLegItem(${n},'${k}',${isHotel?MAX_HOTELS:MAX_ACTS},'${isHotel}')">+ Add ${isHotel?'hotel option':'item'}</button>
+    </div>`;
+  });
+  d.innerHTML=`
+    <div class="leg-head" onclick="toggleLeg(${n})">
+      <div class="leg-head-left">
+        <div class="leg-num">${n}</div>
+        <div>
+          <div><input class="leg-name-input" placeholder="Location — e.g. Paris, France" onclick="event.stopPropagation()"></div>
+          <div><input class="leg-dates-input" placeholder="Dates — e.g. June 1–4, 2027" onclick="event.stopPropagation()"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button class="rm" onclick="event.stopPropagation();this.closest('.leg-card').remove();checkLegBtn()">remove leg</button>
+        <span class="leg-toggle open" id="lt-${n}">▼</span>
+      </div>
+    </div>
+    <div class="leg-body open" id="lb-${n}">${actHTML}</div>`;
+  c.appendChild(d);
+  const btn=document.getElementById('legs-add');
+  if(btn) btn.disabled=legCount>=MAX;
+}
+
+function toggleLeg(n){
+  const body=document.getElementById('lb-'+n);
+  const tog=document.getElementById('lt-'+n);
+  if(body) body.classList.toggle('open');
+  if(tog) tog.classList.toggle('open');
+}
+
+function checkLegBtn(){
+  const btn=document.getElementById('legs-add');
+  if(btn) btn.disabled=document.querySelectorAll('.leg-card').length>=MAX;
+}
+
+function addLegItem(legN,type,max,isHotel){
+  const key='leg'+legN+'-'+type;
+  legItemCounts[key]=(legItemCounts[key]||0)+1;
+  if(legItemCounts[key]>max){legItemCounts[key]--;return;}
+  const c=document.getElementById(key);
+  const d=document.createElement('div');
+  d.className='card';
+  if(isHotel==='true'){
+    d.innerHTML=`<div class="card-head"><span>Hotel Option ${legItemCounts[key]}</span><button class="rm" onclick="this.closest('.card').remove()">remove</button></div>
+    <textarea class="tall" placeholder="Paste full hotel details — name, star rating, room type, check-in/out, inclusions, perks, promotions, pricing, advisories, non-refundable terms..."></textarea>
+    <div class="row2" style="margin-top:8px;">
+      <div class="field"><label>Price per stay (numbers only)</label><input class="item-price" placeholder="e.g. 1450.00"></div>
+      <div class="field"><label>Price Status</label><select class="item-tbd"><option value="no">Known</option><option value="yes">TBD</option></select></div>
+    </div>
+    <hr class="divider">
+    <div class="field"><label style="font-size:10.5px;">Hero Image URL</label><input class="hero-url" placeholder="https://..." oninput="previewHotelPhotos(this.closest('.card'))"></div>
+    <div class="field"><label style="font-size:10.5px;">Gallery URLs — one per line, up to 15</label><textarea class="short gallery-urls" style="min-height:60px;" placeholder="https://photo1.jpg&#10;https://photo2.jpg&#10;..." oninput="previewHotelPhotos(this.closest('.card'))"></textarea></div>
+    <div class="photo-preview"></div>`;
+  } else {
+    d.innerHTML=`<div class="card-head"><span>Item ${legItemCounts[key]}</span><button class="rm" onclick="this.closest('.card').remove()">remove</button></div>
+    <div class="field"><label style="font-size:10.5px;">Label / Group Name</label><input class="item-label" placeholder="e.g. Eiffel Tower Tour June 2, Louvre Tickets, Wine Tasting June 3–4"></div>
+    <textarea class="short" placeholder="Paste details — what is included, operator, timing, cancellation policy, meeting point..."></textarea>
+    <div class="row2" style="margin-top:6px;">
+      <div class="field"><label>Price (numbers only, per person or total)</label><input class="item-price" placeholder="e.g. 89.00"></div>
+      <div class="field"><label>Price Status</label><select class="item-tbd"><option value="no">Known</option><option value="yes">TBD</option></select></div>
+    </div>
+    <div class="img-row"><div class="img-field"><label style="font-size:10.5px;">Photo URL (optional)</label><input placeholder="https://..." oninput="previewImg(this)"></div><div class="img-preview-wrap"></div></div>`;
+  }
+  c.appendChild(d);
+  const btn=document.getElementById(key+'-add');
+  if(btn&&legItemCounts[key]>=max)btn.disabled=true;
+}
+
+function previewHotelPhotos(block){
+  const hero=block.querySelector('.hero-url')?.value.trim()||'';
+  const gallery=block.querySelector('.gallery-urls')?.value.trim()||'';
+  const urls=[hero,...gallery.split('\n').map(u=>u.trim())].filter(Boolean).slice(0,16);
+  const prev=block.querySelector('.photo-preview');
+  if(!prev)return;
+  prev.innerHTML='';
+  urls.forEach(url=>{
+    const img=document.createElement('img');
+    img.src=url;img.loading='lazy';
+    img.onerror=function(){const b=document.createElement('div');b.className='ph-broken';b.textContent='err';prev.replaceChild(b,this);};
+    prev.appendChild(img);
+  });
+}
+
+function addPriceLine(){
+  simpleCounts.pc++;
+  const c=document.getElementById('pc');
+  const d=document.createElement('div');
+  d.className='card';d.style.padding='8px 12px';
+  d.innerHTML=`<div class="row2" style="align-items:center;">
+    <input placeholder="Label e.g. International Flights">
+    <div style="display:flex;gap:6px;align-items:center;"><input placeholder="e.g. $1,200.00"><button class="rm" onclick="this.closest('.card').remove()">✕</button></div>
+  </div>`;
+  c.appendChild(d);
+}
+
+function gv(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+
+function buildPrompt(){
+  const doHTML=outputs.has('html'),doPDF=outputs.has('pdf'),doDOCX=outputs.has('docx');
+  const outList=[doHTML&&'HTML selection page with live calculator',doPDF&&'PDF quote',doDOCX&&'Word document (.docx)'].filter(Boolean).join(' + ');
+  const agentName=gv('agentName')||'Christina Garcia';
+  const agentEmail=gv('agentEmail')||'Christina@PointMeToParadise.com';
+  const agentPhone=gv('agentPhone')||'(281) 229-0862';
+  const w3key=gv('w3key')||'7b40d437-1004-48e2-9031-171a8b0ef4f1';
+  const ghUrl=gv('ghUrl')||'https://pointmetoparadise.github.io/pmtp-quotes/';
+
+  let p='Build: '+outList+'\n\n';
+  p+='=== AGENT ===\n'+agentName+' | '+agentEmail+' | '+agentPhone+'\n';
+  p+='Agency: Point Me to Paradise Travel | Tagline: Custom. Curated. Yours.\n';
+  p+='Web3Forms Key: '+w3key+' | GitHub Base: '+ghUrl+'\n';
+  p+='\n=== TRIP ===\n';
+  if(gv('tripTitle'))p+='Title: '+gv('tripTitle')+'\n';
+  if(gv('cn'))p+='Client: '+gv('cn')+'\n';
+  if(gv('dates'))p+='Dates: '+gv('dates')+'\n';
+  if(gv('guests'))p+='Guests: '+gv('guests')+'\n';
+  if(gv('tt'))p+='Trip Type: '+gv('tt')+'\n';
+  if(gv('openPara'))p+='Opening Paragraph: '+gv('openPara')+'\n';
+  if(gv('sn'))p+='Notes: '+gv('sn')+'\n';
+
+  [{k:'flights',id:'fc',label:'FLIGHTS'},{k:'cruise',id:'cc',label:'CRUISE'},{k:'rail',id:'rc',label:'RAIL'},{k:'car',id:'carC',label:'CAR RENTAL'},{k:'insurance',id:'ic',label:'INSURANCE'}].forEach(({k,id,label})=>{
+    if(!enabled.has(k))return;
+    const bs=document.querySelectorAll('#'+id+' .card');
+    if(!bs.length)return;
+    p+='\n=== '+label+' ===\n';
+    bs.forEach((b,i)=>{
+      const ta=b.querySelector('textarea');
+      const pr=b.querySelector('.item-price');
+      const tbd=b.querySelector('.item-tbd');
+      const imgIn=b.querySelector('.img-row input');
+      p+='--- Item '+(i+1)+' ---\n';
+      if(ta?.value.trim())p+=ta.value.trim()+'\n';
+      if(tbd?.value==='yes')p+='Price: TBD / Client booking independently\n';
+      else if(pr?.value.trim())p+='Price: $'+pr.value.trim()+'\n';
+      if(imgIn?.value.trim())p+='SECTION_IMAGE: '+imgIn.value.trim()+'\n';
+    });
+  });
+
+  const legs=document.querySelectorAll('.leg-card');
+  if(legs.length){
+    p+='\n=== TRIP LEGS ===\n';
+    p+='Hotels: client selects one per leg (required). All other items: optional selectable checkboxes. TBD items show but do not affect calculator total.\n\n';
+    legs.forEach((leg,li)=>{
+      const ins=leg.querySelectorAll('.leg-head input');
+      const loc=ins[0]?.value.trim()||'Leg '+(li+1);
+      const dt=ins[1]?.value.trim()||'';
+      p+='--- LEG '+(li+1)+': '+loc+(dt?' ('+dt+')':'')+' ---\n';
+      ACT_TYPES.forEach(({k,label})=>{
+        const isHotel=k==='hotels';
+        const items=leg.querySelectorAll('#leg'+(li+1)+'-'+k+' .card');
+        if(!items.length)return;
+        p+='\n  ['+label.toUpperCase()+']\n';
+        if(isHotel)p+='  Client selects ONE. Selected hotel price adds to running total.\n';
+        else p+='  Each item is an optional checkbox add-on.\n';
+        items.forEach((item,ii)=>{
+          const labelIn=item.querySelector('.item-label');
+          const ta=item.querySelector('textarea');
+          const pr=item.querySelector('.item-price');
+          const tbd=item.querySelector('.item-tbd');
+          const heroIn=item.querySelector('.hero-url');
+          const galleryIn=item.querySelector('.gallery-urls');
+          const imgIn=item.querySelector('.img-row input');
+          p+='  Item '+(ii+1)+':\n';
+          if(labelIn?.value.trim())p+='    Label: '+labelIn.value.trim()+'\n';
+          if(ta?.value.trim())p+='    Details: '+ta.value.trim()+'\n';
+          if(tbd?.value==='yes')p+='    Price: TBD — show "Contact your advisor for pricing"\n';
+          else if(pr?.value.trim())p+='    Price: $'+pr.value.trim()+'\n';
+          if(isHotel){
+            if(heroIn?.value.trim())p+='    HERO_IMAGE: '+heroIn.value.trim()+'\n';
+            if(galleryIn?.value.trim())galleryIn.value.trim().split('\n').map(u=>u.trim()).filter(Boolean).slice(0,15).forEach((u,j)=>{p+='    GALLERY_'+(j+1)+': '+u+'\n';});
+          } else if(imgIn?.value.trim())p+='    SECTION_IMAGE: '+imgIn.value.trim()+'\n';
+        });
+      });
+      p+='\n';
+    });
+  }
+
+  const pbs=document.querySelectorAll('#pc .card');
+  p+='\n=== PRICING & CALCULATOR ===\n';
+  if(gv('bp'))p+='Base Price: $'+gv('bp')+'\n';
+  pbs.forEach(b=>{const ins=b.querySelectorAll('input');if(ins[0]?.value&&ins[1]?.value)p+=ins[0].value.trim()+': '+ins[1].value.trim()+'\n';});
+  if(gv('gt'))p+='Grand Total: $'+gv('gt')+'\n';
+  if(gv('da'))p+='Deposit: $'+gv('da')+'\n';
+  if(gv('dd'))p+='Deposit Due: '+gv('dd')+'\n';
+  if(gv('fp'))p+='Full Payment Due: '+gv('fp')+'\n';
+  if(gv('currency'))p+='Currency: '+gv('currency')+'\n';
+  if(gv('pn'))p+='Payment Notes: '+gv('pn')+'\n';
+
+  if(doHTML){
+    p+='\n=== HTML BUILD INSTRUCTIONS ===\n';
+    p+='Single self-contained .html file. Colors: --teal:#75AFB1 --gold:#DAC396 --pale:#C4E4E1 --cream:#F5EFE0 --dark:#2C2C2C. Page bg: cream.\n';
+    p+='Fonts: Cormorant Garamond (titles) + Jost (body) from Google Fonts.\n';
+    p+='Trip title prominent at top. Opening paragraph below. Organize by leg with location + dates as section headers.\n';
+    p+='CALCULATOR: Sticky running total panel "Your Estimated Total: $X,XXX.XX". Base = flights/fixed costs. Hotels = radio button per leg, selecting one adds its price. All other items = checkboxes, checking adds price, unchecking removes it. TBD = shown as checkbox with "TBD — contact your advisor" label, no price effect, included in form submission if checked. Total updates instantly via JS event listeners. Format with commas and 2 decimal places.\n';
+    p+='Hotels: clickable cards, teal border + gold checkmark, expandable details, hero + lightbox gallery up to 15 photos, left/right arrows, click outside to close.\n';
+    p+='Activity items: checkbox + label + price (or TBD) + expandable details + optional photo.\n';
+    p+='Form: Web3Forms https://api.web3forms.com/submit key '+w3key+'. Captures: name, email, phone, notes, full selection summary per leg, all checked add-ons, estimated total. Botcheck honeypot (display:none).\n';
+    p+='CRITICAL Cloudflare: build email via JS only — NEVER write '+agentEmail+' as plain text. Use: (function(){var u="'+agentEmail.split('@')[0]+'",d="'+agentEmail.split('@')[1]+'";document.querySelectorAll(".agent-email").forEach(el=>el.textContent=u+"@"+d);})();\n';
+    p+='Success screen after submit, no redirect. Mobile responsive.\n';
+    if(gv('tt'))p+='Trip type: '+gv('tt')+' — tailor tone accordingly.\n';
+  }
+  if(doPDF){
+    p+='\n=== PDF BUILD INSTRUCTIONS ===\n';
+    p+='Python + ReportLab canvas. pip install Pillow --break-system-packages -q\n';
+    p+='Output: /mnt/user-data/outputs/'+((gv('cn')||'Client').replace(/\s+/g,'_'))+'_Quote.pdf\n';
+    p+='Page: letter 612x792. Background WHITE #FFFFFF. Margin 40pt. INNER_W 532pt. Safe zone y=700 to y=60.\n';
+    p+='Colors: TEAL=#75AFB1 GOLD=#DAC396 PALE=#C4E4E1 WHITE=#FFFFFF DARK=#2C2C2C MID=#4A4A4A RED=#C0392B\n';
+    p+='Organize by leg — each leg = labeled section with location + dates header. Hotels as Option A/B/C. Activities grouped by label. TBD = "Price TBD — contact your advisor."\n';
+    p+='Header every page: teal 80pt + 4pt gold bar. Agency left, agent right.\n';
+    p+='Footer every page: teal 46pt. "'+agentName+' | Point Me to Paradise Travel" + "'+agentEmail+' | '+agentPhone+'" left. Disclaimer right.\n';
+    p+='Pre-calculate all y-coords. No emojis. Section bands 22pt. 2-col bullets 8+ items.\n';
+    p+='Closing blurb final page teal rounded rect: "At Point Me to Paradise Travel, we know that paradise looks different for everyone. For some, it\'s an overwater bungalow in Bora Bora. For others, it\'s a cobblestone street in Rome — or a family reunion on a cruise ship. That\'s why we don\'t do cookie-cutter travel. We do yours. Our expert advisors build custom, curated trips built on your vision and our expertise — with insider access, trusted relationships, and every detail handled. You just show up. Your paradise is out there. Let us point you to it. Point Me to Paradise Travel — the world is your oyster, we are your pearl."\n';
+  }
+  if(doDOCX){
+    p+='\n=== DOCX BUILD INSTRUCTIONS ===\n';
+    p+='Node.js + docx. npm install -g docx. Output: /mnt/user-data/outputs/'+((gv('cn')||'Client').replace(/\s+/g,'_'))+'_Quote.docx\n';
+    p+='Page: US Letter 12240x15840 DXA. Margins 1080 DXA. Background WHITE.\n';
+    p+='Colors: TEAL=75AFB1 GOLD=DAC396 PALE=C4E4E1 DARK=2C2C2C WHITE=FFFFFF. Font: Arial.\n';
+    p+='Organize by leg. TBD items show "Price TBD" note.\n';
+    p+='CRITICAL: No unicode bullets. No \\n in TextRun. WidthType.DXA only. ShadingType.CLEAR. PageBreak in Paragraph. Tab stops for footer.\n';
+    p+='Header: teal table, agency name Georgia 40pt bold white, tagline italic pale teal.\n';
+    p+='Gold accent: paragraph with gold bottom border.\n';
+    p+='Section bands: full-width teal cell, white Arial bold uppercase.\n';
+    p+='Footer: "'+agentName+' | Point Me to Paradise Travel" tab disclaimer. Tab stops.\n';
+    p+='Closing blurb in teal table cell, white text, same wording as PDF.\n';
+  }
+
+  document.getElementById('out').textContent=p;
+}
+
+function doCopy(){
+  navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>{
+    const m=document.getElementById('cpd');m.style.display='block';
+    setTimeout(()=>m.style.display='none',2500);
+  });
+}
+
+// Init
+addSimpleBlock('fc','Flight',8);
+addLeg();
+refresh();
+</script>
+</body>
+</html>
